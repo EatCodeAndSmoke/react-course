@@ -1,6 +1,18 @@
 export const appRoutes = {
 	HOME: '/',
+	COURSES: '/courses',
 	CREATE_COURSE: '/create-course',
+	LOGIN: '/login',
+	REGISTRATION: '/registration',
+	COURSE_INFO: '/courses/:id',
+};
+
+export const apiPath = 'http://localhost:3000';
+
+export const apiPaths = {
+	LOGIN: `${apiPath}/login`,
+	LOGOUT: `${apiPath}/logout`,
+	REGISTER: `${apiPath}/register`,
 };
 
 export const mockedCoursesList = [

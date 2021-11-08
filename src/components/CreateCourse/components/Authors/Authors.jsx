@@ -41,8 +41,8 @@ export const Authors = ({ authorsMode, authors, onAuthorBtnClick }) => {
 		});
 
 	return (
-		<div className={'d-flex flex-column'}>
-			<h5 className={'text-center mb-3'}>{headerTitle}</h5>
+		<div className='d-flex flex-column'>
+			<h5 className='text-center mb-3'>{headerTitle}</h5>
 			{authorList}
 		</div>
 	);

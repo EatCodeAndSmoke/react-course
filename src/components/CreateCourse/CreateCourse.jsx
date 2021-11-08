@@ -1,15 +1,16 @@
 import { TextInput, TextArea, TextInputType } from '../../common/Input/Input';
 import CreateAuthor from './components/CreateAuthor/CreateAuthor';
 import { Authors, AuthorsMode } from './components/Authors/Authors';
-import { appRoutes } from '../../constants';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
 import { getCurrentDate } from '../../helpers/dateGenerator';
 import { getDurationText } from '../../helpers/pipeDuration';
+import { AppCoursesContext } from '../../contexts/AppCoursesContext';
+import { useLoginCheck } from '../hoc/LoginCheckHOC/LoginCheckHOC';
 
-const CreateCourse = ({ allAuthors, onNewCourseAdded, onNewAuthorAdded }) => {
-	const history = useHistory();
-	const authorsWithSelectedState = allAuthors.map((a) => {
+const CreateCourse = () => {
+	const { authors, addNewCourse, addNewAuthor } = useContext(AppCoursesContext);
+
+	const authorsWithSelectedState = authors.map((a) => {
 		return { ...a, selected: false };
 	});
 
@@ -34,21 +35,20 @@ const CreateCourse = ({ allAuthors, onNewCourseAdded, onNewAuthorAdded }) => {
 
 	const onAuthorAdded = (author) => {
 		setLocalAllAuthors([...localAllAuthors, { ...author, selected: false }]);
-		onNewAuthorAdded(author);
+		addNewAuthor(author);
 	};
 
 	const onCourseAdded = (e) => {
 		e.preventDefault();
 		const selectedAuthors = localAllAuthors.filter((a) => a.selected);
 		newCourse.authors = [...selectedAuthors.map((a) => a.id)];
-		onNewCourseAdded({ ...newCourse, id: crypto.randomUUID() });
-		history.push(appRoutes.HOME);
+		addNewCourse({ ...newCourse, id: crypto.randomUUID() });
 	};
 
-	return (
+	return useLoginCheck(
 		<form onSubmit={onCourseAdded}>
-			<div className={'form-group row mt-3'}>
-				<div className={'col-6'}>
+			<div className='form-group row mt-3'>
+				<div className='col-6'>
 					<TextInput
 						textInputType={TextInputType.Text}
 						placeholder='ENTER COURSE TITLE'
@@ -57,7 +57,7 @@ const CreateCourse = ({ allAuthors, onNewCourseAdded, onNewAuthorAdded }) => {
 						}
 					/>
 				</div>
-				<div className={'col-6 d-flex justify-content-end'}>
+				<div className='col-6 d-flex justify-content-end'>
 					<input
 						type='submit'
 						value='CREATE COURSE'
@@ -66,8 +66,8 @@ const CreateCourse = ({ allAuthors, onNewCourseAdded, onNewAuthorAdded }) => {
 				</div>
 			</div>
 
-			<div className={'form-group row mt-3'}>
-				<div className={'col'}>
+			<div className='form-group row mt-3'>
+				<div className='col'>
 					<TextArea
 						name='description'
 						placeholder='ENTER COURSE DESCRIPTION'
@@ -78,7 +78,7 @@ const CreateCourse = ({ allAuthors, onNewCourseAdded, onNewAuthorAdded }) => {
 				</div>
 			</div>
 
-			<div className={'form-group row mt-3'}>
+			<div className='form-group row mt-3'>
 				<div className='col-6'>
 					<CreateAuthor onCreateAuthorClick={onAuthorAdded} />
 				</div>
@@ -92,9 +92,9 @@ const CreateCourse = ({ allAuthors, onNewCourseAdded, onNewAuthorAdded }) => {
 				</div>
 			</div>
 
-			<div className={'form-group row mt-3'}>
-				<div className={'col-6'}>
-					<h5 className={'text-center mb-3'}>Duration</h5>
+			<div className='form-group row mt-3'>
+				<div className='col-6'>
+					<h5 className='text-center mb-3'>Duration</h5>
 					<input
 						type='number'
 						name='duration'

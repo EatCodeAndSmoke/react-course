@@ -1,7 +1,12 @@
 import Logo from './components/Logo/Logo';
 import UserArea from './components/UserArea/UserArea';
+import { AppUserContext } from '../../contexts/AppUserContext';
+import { useContext } from 'react';
 
 function Header() {
+	const { userData } = useContext(AppUserContext);
+	const userArea = userData.authenticated ? <UserArea /> : null;
+
 	return (
 		<div
 			className={'navbar navbar-light bg-light'}
@@ -11,9 +16,7 @@ function Header() {
 				<Logo />
 			</a>
 
-			<div>
-				<UserArea />
-			</div>
+			<div>{userArea}</div>
 		</div>
 	);
 }
