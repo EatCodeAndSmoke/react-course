@@ -9,7 +9,6 @@ export const sendApiRequest = async (
 	showSuccessMessage,
 	showErrorMessage
 ) => {
-	debugger;
 	let fetchData = {
 		method: method,
 		headers: {},

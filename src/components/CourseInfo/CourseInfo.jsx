@@ -18,7 +18,7 @@ const CourseInfo = () => {
 
 	return useLoginCheck(
 		<div className='container-fluid'>
-			<div className='row mt-3'>
+			<div className='row mt-5'>
 				<div className='col'>
 					<Link to={appRoutes.COURSES}>
 						<Button
@@ -30,18 +30,13 @@ const CourseInfo = () => {
 				</div>
 			</div>
 
-			<div className='row'>
-				<div className='col'>
-					<h1 className='text-center'>{course.title}</h1>
-				</div>
-			</div>
-
-			<div className='row mt-3'>
+			<div className='row mt-5'>
 				<div className='col-8'>
+					<h1 className='text-center'>{course.title}</h1>
 					<p>{course.description}</p>
 				</div>
 
-				<div className='col-4 d-flex flex-column align-items-center'>
+				<div className='col-4 d-flex flex-column align-items-start'>
 					<p>
 						<strong>ID: </strong> {course.id}
 					</p>
