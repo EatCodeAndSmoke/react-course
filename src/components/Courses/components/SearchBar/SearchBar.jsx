@@ -7,7 +7,7 @@ import {
 
 function SearchBar({ onTextChange }) {
 	return (
-		<div className={'d-flex'}>
+		<div className='d-flex'>
 			<TextInput
 				textInputType={TextInputType.Search}
 				placeholder='TYPE TO SEARCH'

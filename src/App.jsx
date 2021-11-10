@@ -1,42 +1,54 @@
+import 'react-notifications/lib/notifications.css';
+import { NotificationContainer } from 'react-notifications';
 import Header from './components/Header/Header';
-import CreateCourse from './components/CreateCourse/CreateCourse';
+import Login from './components/Login/Login';
+import Registration from './components/Registration/Registration';
 import Courses from './components/Courses/Courses';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { appRoutes, mockedCoursesList, mockedAuthorsList } from './constants';
-import React, { useState } from 'react';
+import CourseInfo from './components/CourseInfo/CourseInfo';
+import CreateCourse from './components/CreateCourse/CreateCourse';
+import { AppCoursesContextProvider } from './contexts/AppCoursesContext';
+import { AppUserContextProvider } from './contexts/AppUserContext';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { appRoutes } from './constants';
 
 const App = () => {
-	const [courses, setCourses] = useState(mockedCoursesList);
-	const [authors, setAuthors] = useState(mockedAuthorsList);
-
-	const onNewCourseAdded = (course) => {
-		setCourses([...courses, course]);
-	};
-
-	const onNewAuthorAdded = (author) => {
-		debugger;
-		setAuthors([...authors, author]);
-	};
-
 	return (
-		<div className={'container'}>
-			<Header />
-
+		<div className='container h-100'>
 			<BrowserRouter>
 				<Switch>
-					<Route exact path={appRoutes.HOME}>
-						<Courses courses={courses} authors={authors} />
-					</Route>
+					<AppUserContextProvider>
+						<Header />
 
-					<Route path={appRoutes.CREATE_COURSE}>
-						<CreateCourse
-							allAuthors={authors}
-							onNewCourseAdded={onNewCourseAdded}
-							onNewAuthorAdded={onNewAuthorAdded}
+						<Route
+							exact
+							path={appRoutes.HOME}
+							render={() => <Redirect to={appRoutes.COURSES} />}
 						/>
-					</Route>
+						<Route path={appRoutes.LOGIN}>
+							<Login />
+						</Route>
+
+						<Route path={appRoutes.REGISTRATION}>
+							<Registration />
+						</Route>
+
+						<AppCoursesContextProvider>
+							<Route exact path={appRoutes.COURSES}>
+								<Courses />
+							</Route>
+
+							<Route exact path={appRoutes.COURSE_INFO}>
+								<CourseInfo />
+							</Route>
+
+							<Route exact path={appRoutes.CREATE_COURSE}>
+								<CreateCourse />
+							</Route>
+						</AppCoursesContextProvider>
+					</AppUserContextProvider>
 				</Switch>
 			</BrowserRouter>
+			<NotificationContainer />
 		</div>
 	);
 };
