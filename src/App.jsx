@@ -1,44 +1,19 @@
-import Header from './components/Header/Header';
-import CreateCourse from './components/CreateCourse/CreateCourse';
-import Courses from './components/Courses/Courses';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { appRoutes, mockedCoursesList, mockedAuthorsList } from './constants';
-import React, { useState } from 'react';
+import React from 'react';
+import { Provider } from 'react-redux';
 
-const App = () => {
-	const [courses, setCourses] = useState(mockedCoursesList);
-	const [authors, setAuthors] = useState(mockedAuthorsList);
+import AppRouter from './components/AppRouter/AppRouter';
+import NotifyClient from './components/NotifyClient/NotifyClient';
+import store from './store/index';
 
-	const onNewCourseAdded = (course) => {
-		setCourses([...courses, course]);
-	};
+import 'react-notifications/lib/notifications.css';
 
-	const onNewAuthorAdded = (author) => {
-		debugger;
-		setAuthors([...authors, author]);
-	};
-
-	return (
-		<div className={'container'}>
-			<Header />
-
-			<BrowserRouter>
-				<Switch>
-					<Route exact path={appRoutes.HOME}>
-						<Courses courses={courses} authors={authors} />
-					</Route>
-
-					<Route path={appRoutes.CREATE_COURSE}>
-						<CreateCourse
-							allAuthors={authors}
-							onNewCourseAdded={onNewCourseAdded}
-							onNewAuthorAdded={onNewAuthorAdded}
-						/>
-					</Route>
-				</Switch>
-			</BrowserRouter>
+const App = () => (
+	<Provider store={store}>
+		<div className='container h-100'>
+			<AppRouter />
+			<NotifyClient />
 		</div>
-	);
-};
+	</Provider>
+);
 
 export default App;

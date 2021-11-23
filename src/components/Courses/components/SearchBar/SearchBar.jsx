@@ -1,27 +1,33 @@
-import { TextInput, TextInputType } from '../../../../common/Input/Input';
-import {
-	Button,
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import TextInput, {
+	TextInputType,
+} from '../../../../common/TextInput/TextInput';
+import Button, {
 	ButtonColor,
 	ButtonSize,
 } from '../../../../common/Button/Button';
 
-function SearchBar({ onTextChange }) {
-	return (
-		<div className={'d-flex'}>
-			<TextInput
-				textInputType={TextInputType.Search}
-				placeholder='TYPE TO SEARCH'
-				onTextChange={onTextChange}
-			/>
+const SearchBar = ({ onTextChange }) => (
+	<div className='d-flex'>
+		<TextInput
+			textInputType={TextInputType.Search}
+			placeholder='TYPE TO SEARCH'
+			onTextChange={onTextChange}
+		/>
 
-			<Button
-				buttonColor={ButtonColor.Success}
-				outline={true}
-				buttonSize={ButtonSize.Small}
-				buttonText='SEARCH'
-			/>
-		</div>
-	);
-}
+		<Button
+			buttonColor={ButtonColor.Success}
+			outline
+			buttonSize={ButtonSize.Small}
+			buttonText='SEARCH'
+		/>
+	</div>
+);
+
+SearchBar.propTypes = {
+	onTextChange: PropTypes.func.isRequired,
+};
 
 export default SearchBar;
