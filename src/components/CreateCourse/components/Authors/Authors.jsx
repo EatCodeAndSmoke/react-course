@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 import { ButtonColor } from '../../../../common/Button/Button';
 import AuthorRecord from './components/AuthorRecord/AuthorRecord';
 
@@ -6,7 +9,7 @@ export const AuthorsMode = {
 	SelectedAuthorList: 2,
 };
 
-export const Authors = ({ authorsMode, authors, onAuthorBtnClick }) => {
+const Authors = ({ authorsMode, authors, onAuthorBtnClick }) => {
 	const headerTitle =
 		authorsMode === AuthorsMode.NotSelectedAuthorsList
 			? 'Authors'
@@ -28,17 +31,15 @@ export const Authors = ({ authorsMode, authors, onAuthorBtnClick }) => {
 				? !a.selected
 				: a.selected
 		)
-		.map((a) => {
-			return (
-				<AuthorRecord
-					key={a.id}
-					author={a}
-					btnColor={btnColor}
-					btnText={btnText}
-					onAuthorBtnClick={() => onAuthorBtnClick(a.id)}
-				/>
-			);
-		});
+		.map((a) => (
+			<AuthorRecord
+				key={a.id}
+				author={a}
+				btnColor={btnColor}
+				btnText={btnText}
+				onAuthorBtnClick={() => onAuthorBtnClick(a.id)}
+			/>
+		));
 
 	return (
 		<div className='d-flex flex-column'>
@@ -47,3 +48,11 @@ export const Authors = ({ authorsMode, authors, onAuthorBtnClick }) => {
 		</div>
 	);
 };
+
+Authors.propTypes = {
+	authorsMode: PropTypes.oneOf(AuthorsMode).isRequired,
+	authors: PropTypes.arrayOf(PropTypes.any).isRequired,
+	onAuthorBtnClick: PropTypes.func.isRequired,
+};
+
+export default Authors;

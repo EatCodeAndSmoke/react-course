@@ -1,18 +1,50 @@
-import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { TextInput, TextInputType } from '../../common/Input/Input';
-import { Button, ButtonColor } from '../../common/Button/Button';
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
+import TextInput, { TextInputType } from '../../common/TextInput/TextInput';
+import Button, { ButtonColor } from '../../common/Button/Button';
 import { appRoutes } from '../../constants';
-import { AppUserContext } from '../../contexts/AppUserContext';
+import useInputChangeHandler from '../../helpers/formInputHandlers';
+import { sendLoginRequest } from '../../services';
+import { isLoginRequested } from '../../store/selectors';
+import { createSetErrorMessage } from '../../store/global/actionCreators';
+import { setUserData } from '../../helpers/localStorageHelper';
+import {
+	loginRequest,
+	loginRequestSuccess,
+	loginRequestFail,
+} from '../../store/user/actionCreators';
 
 const Login = () => {
 	const [loginData, setLoginData] = useState({
-		name: '',
 		email: '',
 		password: '',
 	});
 
-	const { login } = useContext(AppUserContext);
+	const dispatch = useDispatch();
+	const history = useHistory();
+	const loginRequested = useSelector(isLoginRequested);
+	const inputChangeHandler = useInputChangeHandler(loginData, setLoginData);
+
+	const onLoginClick = () => {
+		sendLoginRequest(
+			loginData,
+			() => {
+				dispatch(loginRequest());
+			},
+			(resp) => {
+				const userData = { ...resp.user, token: resp.result };
+				setUserData(userData);
+				dispatch(loginRequestSuccess(userData));
+				history.push(appRoutes.HOME);
+			},
+			(errorMsg) => {
+				dispatch(loginRequestFail());
+				dispatch(createSetErrorMessage(errorMsg));
+			}
+		);
+	};
 
 	return (
 		<div className='container mt-5'>
@@ -21,40 +53,24 @@ const Login = () => {
 					<h3>Login</h3>
 				</div>
 				<div className='form-group mt-4'>
-					<label>Name</label>
+					<label htmlFor='login-email'>EMAIL</label>
 					<TextInput
-						textInputType={TextInputType.Text}
-						placeholder='Enter name'
-						onTextChange={(e) =>
-							setLoginData({ ...loginData, name: e.target.value })
-						}
-					/>
-				</div>
-				<div className='form-group mt-4'>
-					<label>EMAIL</label>
-					<TextInput
-						textInputType={TextInputType.Text}
+						id='login-email'
+						name='email'
+						textInputType={TextInputType.Email}
 						placeholder='Enter email'
-						onTextChange={(e) =>
-							setLoginData({
-								...loginData,
-								email: e.target.value,
-							})
-						}
+						onTextChange={inputChangeHandler}
 					/>
 				</div>
 
 				<div className='form-group mt-4'>
-					<label>PASSWORD</label>
+					<label htmlFor='login-password'>PASSWORD</label>
 					<TextInput
+						id='login-password'
+						name='password'
 						textInputType={TextInputType.Password}
 						placeholder='Enter password'
-						onTextChange={(e) =>
-							setLoginData({
-								...loginData,
-								password: e.target.value,
-							})
-						}
+						onTextChange={inputChangeHandler}
 					/>
 				</div>
 
@@ -62,7 +78,8 @@ const Login = () => {
 					<Button
 						buttonText='LOGIN'
 						buttonColor={ButtonColor.Primary}
-						onClick={() => login(loginData)}
+						onClick={onLoginClick}
+						showLoader={loginRequested}
 					/>
 				</div>
 
@@ -76,7 +93,5 @@ const Login = () => {
 		</div>
 	);
 };
-
-Login.propTypes = {};
 
 export default Login;

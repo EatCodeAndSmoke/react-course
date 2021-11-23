@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const ButtonColor = {
 	Primary: 'primary',
 	Secondary: 'secondary',
@@ -11,37 +14,53 @@ export const ButtonSize = {
 	Small: 'sm',
 };
 
-export function Button({
+const Button = ({
 	buttonColor,
 	outline,
 	buttonSize,
 	buttonText,
 	onClick,
-}) {
+	showLoader,
+}) => {
 	const classNames = ['btn '];
-
-	classNames.push(
-		`btn${outline === true ? '-outline' : ''}${
-			'-' + buttonColor + ' ' ?? '-primary '
-		}`
-	);
-
-	if (buttonSize && buttonSize !== ButtonSize.Medium)
-		classNames.push(`btn-${buttonSize}`);
-
+	classNames.push(`btn-${outline ? 'outline-' : ''}${buttonColor} `);
+	classNames.push(`btn-${buttonSize}`);
 	const classesStr = classNames.join('');
+	const loader = showLoader ? (
+		<span
+			className='spinner-border spinner-border-sm'
+			role='status'
+			aria-hidden='true'
+		/>
+	) : null;
 
 	return (
 		<button
+			type='button'
 			className={classesStr}
-			onClick={(e) => {
-				if (onClick) {
-					e.preventDefault();
-					onClick();
-				}
-			}}
+			onClick={onClick}
+			disabled={showLoader}
 		>
+			{loader}
 			<span>{buttonText}</span>
 		</button>
 	);
-}
+};
+
+Button.propTypes = {
+	buttonColor: PropTypes.oneOf(ButtonColor),
+	outline: PropTypes.bool,
+	buttonSize: PropTypes.oneOf(ButtonSize),
+	buttonText: PropTypes.string.isRequired,
+	onClick: PropTypes.func.isRequired,
+	showLoader: PropTypes.bool,
+};
+
+Button.defaultProps = {
+	buttonColor: ButtonColor.Primary,
+	outline: false,
+	buttonSize: ButtonSize.Medium,
+	showLoader: false,
+};
+
+export default Button;

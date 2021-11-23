@@ -1,22 +1,23 @@
-import { TextInput, TextArea, TextInputType } from '../../common/Input/Input';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+
+import TextInput, { TextInputType } from '../../common/TextInput/TextInput';
+import TextArea from '../../common/TextArea/TextArea';
 import CreateAuthor from './components/CreateAuthor/CreateAuthor';
-import { Authors, AuthorsMode } from './components/Authors/Authors';
-import React, { useState, useContext } from 'react';
-import { getCurrentDate } from '../../helpers/dateGenerator';
-import { getDurationText } from '../../helpers/pipeDuration';
-import { AppCoursesContext } from '../../contexts/AppCoursesContext';
-import { useLoginCheck } from '../hoc/LoginCheckHOC/LoginCheckHOC';
+import Authors, { AuthorsMode } from './components/Authors/Authors';
+import getCurrentDate from '../../helpers/dateGenerator';
+import getDurationText from '../../helpers/pipeDuration';
+import onInputChangeHandler from '../../helpers/formInputHandlers';
+import { getAuthors } from '../../store/selectors';
+import { appRoutes } from '../../constants';
+import { createAuthorSuccess } from '../../store/authors/actionCreators';
+import { createCourseSuccess } from '../../store/courses/actionCreators';
 
 const CreateCourse = () => {
-	const { authors, addNewCourse, addNewAuthor } = useContext(AppCoursesContext);
-
-	const authorsWithSelectedState = authors.map((a) => {
-		return { ...a, selected: false };
-	});
-
-	const [localAllAuthors, setLocalAllAuthors] = useState(
-		authorsWithSelectedState
-	);
+	const history = useHistory();
+	const dispatch = useDispatch();
+	const authors = useSelector(getAuthors);
 
 	const [newCourse, setNewCourse] = useState({
 		id: '',
@@ -27,6 +28,17 @@ const CreateCourse = () => {
 		authors: [],
 	});
 
+	const inputChangeHandler = onInputChangeHandler(newCourse, setNewCourse);
+
+	const authorsWithSelectedState = authors.map((a) => ({
+		...a,
+		selected: false,
+	}));
+
+	const [localAllAuthors, setLocalAllAuthors] = useState(
+		authorsWithSelectedState
+	);
+
 	const onAuthorSelectionChanged = (authorId) => {
 		const author = localAllAuthors.find((a) => a.id === authorId);
 		author.selected = !author.selected;
@@ -34,27 +46,27 @@ const CreateCourse = () => {
 	};
 
 	const onAuthorAdded = (author) => {
+		dispatch(createAuthorSuccess(author));
 		setLocalAllAuthors([...localAllAuthors, { ...author, selected: false }]);
-		addNewAuthor(author);
 	};
 
-	const onCourseAdded = (e) => {
-		e.preventDefault();
+	const onCourseAdded = () => {
 		const selectedAuthors = localAllAuthors.filter((a) => a.selected);
+		newCourse.id = crypto.randomUUID();
 		newCourse.authors = [...selectedAuthors.map((a) => a.id)];
-		addNewCourse({ ...newCourse, id: crypto.randomUUID() });
+		dispatch(createCourseSuccess(newCourse));
+		history.push(appRoutes.COURSES);
 	};
 
-	return useLoginCheck(
+	return (
 		<form onSubmit={onCourseAdded}>
 			<div className='form-group row mt-3'>
 				<div className='col-6'>
 					<TextInput
+						name='title'
 						textInputType={TextInputType.Text}
 						placeholder='ENTER COURSE TITLE'
-						onTextChange={(e) =>
-							setNewCourse({ ...newCourse, title: e.target.value })
-						}
+						onTextChange={inputChangeHandler}
 					/>
 				</div>
 				<div className='col-6 d-flex justify-content-end'>
@@ -71,9 +83,7 @@ const CreateCourse = () => {
 					<TextArea
 						name='description'
 						placeholder='ENTER COURSE DESCRIPTION'
-						onTextChange={(e) =>
-							setNewCourse({ ...newCourse, description: e.target.value })
-						}
+						onTextChange={inputChangeHandler}
 					/>
 				</div>
 			</div>
@@ -104,7 +114,7 @@ const CreateCourse = () => {
 							setNewCourse({ ...newCourse, duration: +e.target.value })
 						}
 					/>
-					<h3 className={'mt-3'}>
+					<h3 className='mt-3'>
 						<p>
 							Duration: <strong>{getDurationText(newCourse.duration)}</strong>
 						</p>

@@ -1,22 +1,30 @@
-import { Button, ButtonColor } from '../../common/Button/Button';
-import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
-import { useContext } from 'react';
-import { AppCoursesContext } from '../../contexts/AppCoursesContext';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory, useParams, Link } from 'react-router-dom';
+
+import Button, { ButtonColor } from '../../common/Button/Button';
 import { appRoutes } from '../../constants';
-import { getDurationText } from '../../helpers/pipeDuration';
-import { useLoginCheck } from '../hoc/LoginCheckHOC/LoginCheckHOC';
+import getDurationText from '../../helpers/pipeDuration';
+import { getAuthors, getCourses } from '../../store/selectors';
+import getCourseAuthorNames from '../../helpers/courseHelpers';
+import { createSetErrorMessage } from '../../store/global/actionCreators';
 
 const CourseInfo = () => {
-	debugger;
 	const { id } = useParams();
-	const { getCourseById, authors } = useContext(AppCoursesContext);
-	const course = getCourseById(id);
-	const authorNames = course.authors
-		.map((id) => authors.find((a) => a.id === id)?.name)
-		.join(', ');
+	const dispatch = useDispatch();
+	const history = useHistory();
+	const courses = useSelector(getCourses);
+	const authors = useSelector(getAuthors);
+	const course = courses.find((c) => c.id === id);
+	if (!course) {
+		dispatch(createSetErrorMessage('COURSE NOT FOUND'));
+		history.push(appRoutes.HOME);
+		return null;
+	}
 
-	return useLoginCheck(
+	const authorNames = getCourseAuthorNames(course, authors);
+
+	return (
 		<div className='container-fluid'>
 			<div className='row mt-5'>
 				<div className='col'>
@@ -24,7 +32,7 @@ const CourseInfo = () => {
 						<Button
 							buttonText='< Back to courses'
 							buttonColor={ButtonColor.Primary}
-							outline={true}
+							outline
 						/>
 					</Link>
 				</div>
