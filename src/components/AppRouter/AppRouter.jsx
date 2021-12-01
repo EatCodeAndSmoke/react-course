@@ -1,5 +1,5 @@
-import React from 'react';
-import { useSelector, Provider } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch, Provider } from 'react-redux';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Login from '../Login/Login';
@@ -7,12 +7,23 @@ import Registration from '../Registration/Registration';
 import Courses from '../Courses/Courses';
 import CourseInfo from '../CourseInfo/CourseInfo';
 import Header from '../Header/Header';
-import CreateCourse from '../CreateCourse/CreateCourse';
+import CourseFrom from '../CourseFrom/CourseFrom';
 import { appRoutes } from '../../constants';
 import { isAuthenticated } from '../../store/selectors';
 import store from '../../store/index';
+import { readJwtToken } from '../../helpers/localStorageHelper';
+import { retreiveUserIdentity } from '../../store/user/thunk';
 
 const AppRouter = () => {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		const token = readJwtToken();
+		if (token) {
+			dispatch(retreiveUserIdentity({}));
+		}
+	}, [dispatch]);
+
 	const isAuth = useSelector(isAuthenticated);
 
 	return (
@@ -40,7 +51,11 @@ const AppRouter = () => {
 					</Route>
 
 					<Route exact path={appRoutes.CREATE_COURSE}>
-						{isAuth ? <CreateCourse /> : <Redirect to={appRoutes.LOGIN} />}
+						{isAuth ? <CourseFrom /> : <Redirect to={appRoutes.LOGIN} />}
+					</Route>
+
+					<Route exact path={appRoutes.UPDATE_COURSE}>
+						{isAuth ? <CourseFrom /> : <Redirect to={appRoutes.LOGIN} />}
 					</Route>
 
 					<Route exact path={appRoutes.COURSE_INFO}>

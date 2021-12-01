@@ -1,28 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { NotificationManager } from 'react-notifications';
 
 import getDurationText from '../../../../helpers/pipeDuration';
 import { appRoutes } from '../../../../constants';
 import getCourseAuthorNames from '../../../../helpers/courseHelpers';
 import { getAuthors } from '../../../../store/selectors';
-import { createSetSuccessMessage } from '../../../../store/global/actionCreators';
+import { deleteCourse } from '../../../../store/courses/thunk';
 import Button, {
 	ButtonColor,
 	ButtonSize,
 } from '../../../../common/Button/Button';
-import { deleteCourseSuccess } from '../../../../store/courses/actionCreators';
 
 const CourseCard = ({ course }) => {
 	const dispatch = useDispatch();
+	const history = useHistory();
 	const authors = useSelector(getAuthors);
 	const authorNames = getCourseAuthorNames(course, authors);
+	const [deleteCourseRequested, setDeleteCourseRequested] = useState(false);
 
-	const onDeleteClick = () => {
-		dispatch(deleteCourseSuccess(course.id));
-		dispatch(createSetSuccessMessage('COURSE DELETED SUCCESSFULLY'));
+	const deleteReq = {
+		courseId: course.id,
+		onStarted: () => setDeleteCourseRequested(true),
+		onSuccess: () => {
+			setDeleteCourseRequested(false);
+			NotificationManager.success('COURSE DELETED');
+		},
+		onFail: (msg) => {
+			setDeleteCourseRequested(false);
+			NotificationManager.error(msg);
+		},
 	};
+
+	const onDeleteClick = () => dispatch(deleteCourse(deleteReq));
+
+	const onUpdateClick = () =>
+		history.push(appRoutes.GET_UPDATE_COURSE(course.id));
+
+	const onShowCourseClick = () =>
+		history.push(appRoutes.GET_COURSE_INFO(course.id));
 
 	return (
 		<div className='card mt-3 p-3'>
@@ -56,14 +74,13 @@ const CourseCard = ({ course }) => {
 
 					<p className='d-flex justify-content-start align-items-center'>
 						<div style={{ 'margin-right': '4px' }}>
-							<Link to={`${appRoutes.COURSES}/${course.id}`}>
-								<Button
-									buttonColor={ButtonColor.Primary}
-									outline
-									buttonSize={ButtonSize.Small}
-									buttonText='SHOW'
-								/>
-							</Link>
+							<Button
+								buttonColor={ButtonColor.Primary}
+								outline
+								buttonSize={ButtonSize.Small}
+								buttonText='SHOW'
+								onClick={onShowCourseClick}
+							/>
 						</div>
 
 						<div style={{ 'margin-right': '4px' }}>
@@ -72,6 +89,7 @@ const CourseCard = ({ course }) => {
 								outline
 								buttonSize={ButtonSize.Small}
 								buttonText='UPDATE'
+								onClick={onUpdateClick}
 							/>
 						</div>
 
@@ -81,6 +99,7 @@ const CourseCard = ({ course }) => {
 							buttonSize={ButtonSize.Small}
 							buttonText='DELETE'
 							onClick={onDeleteClick}
+							showLoader={deleteCourseRequested}
 						/>
 					</p>
 				</div>
@@ -90,7 +109,13 @@ const CourseCard = ({ course }) => {
 };
 
 CourseCard.propTypes = {
-	course: PropTypes.instanceOf(PropTypes.any).isRequired,
+	course: PropTypes.exact({
+		id: PropTypes.string,
+		title: PropTypes.string,
+		duration: PropTypes.number,
+		description: PropTypes.string,
+		creationDate: PropTypes.string,
+	}).isRequired,
 };
 
 export default CourseCard;

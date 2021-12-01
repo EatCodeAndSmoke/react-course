@@ -16,6 +16,7 @@ export const ButtonSize = {
 
 const Button = ({
 	buttonColor,
+	isSubmit,
 	outline,
 	buttonSize,
 	buttonText,
@@ -36,7 +37,7 @@ const Button = ({
 
 	return (
 		<button
-			type='button'
+			type={isSubmit ? 'submit' : 'button'}
 			className={classesStr}
 			onClick={onClick}
 			disabled={showLoader}
@@ -48,12 +49,13 @@ const Button = ({
 };
 
 Button.propTypes = {
-	buttonColor: PropTypes.oneOf(ButtonColor),
+	buttonColor: PropTypes.oneOf({ ...ButtonColor }),
 	outline: PropTypes.bool,
-	buttonSize: PropTypes.oneOf(ButtonSize),
+	buttonSize: PropTypes.oneOf({ ...ButtonSize }),
 	buttonText: PropTypes.string.isRequired,
-	onClick: PropTypes.func.isRequired,
+	onClick: PropTypes.func,
 	showLoader: PropTypes.bool,
+	isSubmit: PropTypes.bool,
 };
 
 Button.defaultProps = {
@@ -61,6 +63,8 @@ Button.defaultProps = {
 	outline: false,
 	buttonSize: ButtonSize.Medium,
 	showLoader: false,
+	onClick: (e) => e,
+	isSubmit: false,
 };
 
 export default Button;

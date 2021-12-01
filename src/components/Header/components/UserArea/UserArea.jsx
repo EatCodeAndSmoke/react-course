@@ -1,43 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { NotificationManager } from 'react-notifications';
 
-import { getUserData, isLogoutRequested } from '../../../../store/selectors';
+import { getUserData } from '../../../../store/selectors';
 import { appRoutes } from '../../../../constants';
-import { clearUserData } from '../../../../helpers/localStorageHelper';
+import { logOut } from '../../../../store/user/thunk';
 import Button, {
 	ButtonColor,
 	ButtonSize,
 } from '../../../../common/Button/Button';
-import { logoutRequestSuccess } from '../../../../store/user/actionCreators';
 
 const UserArea = () => {
 	const history = useHistory();
-	const userData = useSelector(getUserData);
-	const logoutRequested = useSelector(isLogoutRequested);
 	const dispatch = useDispatch();
+	const userData = useSelector(getUserData);
+
+	const [logoutRequested, setLogoutRequested] = useState(false);
+
+	const logoutReq = {
+		jwtToken: userData.token,
+		onStarted: () => setLogoutRequested(true),
+		onSuccess: () => {
+			setLogoutRequested(false);
+			history.push(appRoutes.LOGIN);
+		},
+		onFail: (msg) => {
+			setLogoutRequested(false);
+			NotificationManager.error(msg);
+		},
+	};
 
 	const onLogoutClick = () => {
-		// sendLogoutRequest(
-		// 	userData.token,
-		// 	() => {
-		// 		dispatch(logoutRequest());
-		// 	},
-		// 	() => {
-		// 		dispatch(logoutRequestSuccess());
-		// 		clearUserData();
-		// 		history.push(appRoutes.LOGIN);
-		// 	},
-		// 	(errorMsg) => {
-		// 		dispatch(logoutRequestFail());
-		// 		dispatch(createSetErrorMessage(errorMsg));
-		// 	}
-		// );
-
-		dispatch(logoutRequestSuccess());
-		clearUserData();
-		// eslint-disable-next-line react/prop-types
-		history.push(appRoutes.LOGIN);
+		dispatch(logOut(logoutReq));
 	};
 
 	return (

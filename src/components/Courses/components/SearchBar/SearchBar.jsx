@@ -27,7 +27,11 @@ const SearchBar = ({ onTextChange }) => (
 );
 
 SearchBar.propTypes = {
-	onTextChange: PropTypes.func.isRequired,
+	onTextChange: PropTypes.func,
+};
+
+SearchBar.defaultProps = {
+	onTextChange: (e) => e.preventDefault(),
 };
 
 export default SearchBar;

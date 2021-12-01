@@ -2,76 +2,32 @@ import courseActionTypes from './actionTypes';
 
 const initialState = {
 	courses: [],
-	createCourseRequested: false,
-	updateCourseRequested: false,
-	deleteCourseRequested: false,
-	loadCoursesRequested: false,
-	initialCoursesLoaded: false,
 };
 
 const coursesReducer = (state = initialState, { type, payload }) => {
 	switch (type) {
-		case courseActionTypes.INITIAL_COURSES_LOADED:
+		case courseActionTypes.COURSES_LOADED:
 			return {
 				...state,
-				initialCoursesLoaded: true,
-			};
-
-		case courseActionTypes.CREATE_COURSE_REQUEST:
-			return {
-				...state,
-				createCourseRequested: true,
-			};
-
-		case courseActionTypes.CREATE_COURSE_SUCCESS:
-			return {
-				...state,
-				createCourseRequested: false,
-				courses: [...state.courses, payload],
-			};
-
-		case courseActionTypes.CREATE_COURSE_FAIL:
-			return {
-				...state,
-				createCourseRequested: false,
-			};
-
-		case courseActionTypes.LOAD_COURSES_REQUEST:
-			return {
-				...state,
-				loadCoursesRequested: true,
-			};
-
-		case courseActionTypes.LOAD_COURSES_SUCCESS:
-			return {
-				...state,
-				loadCoursesRequested: false,
 				courses: [...payload],
 			};
 
-		case courseActionTypes.LOAD_COURSES_FAIL:
+		case courseActionTypes.COURSE_ADDED:
 			return {
 				...state,
-				loadCoursesRequested: false,
+				courses: [...state.courses, payload],
 			};
 
-		case courseActionTypes.DELETE_COURSE_REQUEST:
+		case courseActionTypes.COURSE_UPDATED:
 			return {
 				...state,
-				deleteCourseRequested: true,
+				courses: [...state.courses.filter((c) => c.id !== payload.id), payload],
 			};
 
-		case courseActionTypes.DELETE_COURSE_SUCCESS:
+		case courseActionTypes.COURSE_DELETED:
 			return {
 				...state,
-				deleteCourseRequested: false,
-				courses: state.courses.filter((c) => c.id !== payload),
-			};
-
-		case courseActionTypes.DELETE_COURSE_FAIL:
-			return {
-				...state,
-				deleteCourseRequested: false,
+				courses: [...state.courses.filter((c) => c.id !== payload.id)],
 			};
 
 		default:

@@ -20,8 +20,11 @@ const AuthorRecord = ({ author, btnColor, btnText, onAuthorBtnClick }) => (
 );
 
 AuthorRecord.propTypes = {
-	author: PropTypes.instanceOf(PropTypes.any).isRequired,
-	btnColor: PropTypes.oneOf(ButtonColor).isRequired,
+	author: PropTypes.instanceOf({
+		id: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+	}).isRequired,
+	btnColor: PropTypes.oneOf({ ...ButtonColor }).isRequired,
 	btnText: PropTypes.string.isRequired,
 	onAuthorBtnClick: PropTypes.func.isRequired,
 };

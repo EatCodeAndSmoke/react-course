@@ -1,27 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { NotificationManager } from 'react-notifications';
 
 import TextInput, { TextInputType } from '../../common/TextInput/TextInput';
 import Button, { ButtonColor } from '../../common/Button/Button';
 import { appRoutes } from '../../constants';
 import onInputChangeHandler from '../../helpers/formInputHandlers';
-import { sendRegisterRequest } from '../../services';
-import { isRegistrationRequested } from '../../store/selectors';
-import {
-	createSetErrorMessage,
-	createSetSuccessMessage,
-} from '../../store/global/actionCreators';
-import {
-	registerUserRequest,
-	registerUserSuccess,
-	registerUserFail,
-} from '../../store/user/actionCreators';
+import { register } from '../../store/user/thunk';
 
 const Registration = () => {
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const registrationRequested = useSelector(isRegistrationRequested);
+
+	const [registrationRequested, setRegistrationRequested] = useState(false);
 
 	const [registrationData, setRegistrationData] = useState({
 		name: '',
@@ -34,24 +26,22 @@ const Registration = () => {
 		setRegistrationData
 	);
 
+	const registerReq = {
+		registerInput: registrationData,
+		onStarted: () => setRegistrationRequested(true),
+		onSuccess: () => {
+			setRegistrationRequested(false);
+			NotificationManager.success('REGISTRATION SUCCESS');
+			history.push(appRoutes.LOGIN);
+		},
+		onFail: (msg) => {
+			setRegistrationRequested(false);
+			NotificationManager.error(msg);
+		},
+	};
+
 	const onRegisterClick = () => {
-		// eslint-disable-next-line no-debugger
-		debugger;
-		sendRegisterRequest(
-			registrationData,
-			() => {
-				dispatch(registerUserRequest());
-			},
-			() => {
-				dispatch(registerUserSuccess());
-				dispatch(createSetSuccessMessage('REGISTRATION SUCCEEDED'));
-				history.push(appRoutes.LOGIN);
-			},
-			(errorMsg) => {
-				dispatch(registerUserFail());
-				dispatch(createSetErrorMessage(errorMsg));
-			}
-		);
+		dispatch(register(registerReq));
 	};
 
 	return (

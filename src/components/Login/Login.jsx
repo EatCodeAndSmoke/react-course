@@ -1,49 +1,43 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { NotificationManager } from 'react-notifications';
 
 import TextInput, { TextInputType } from '../../common/TextInput/TextInput';
 import Button, { ButtonColor } from '../../common/Button/Button';
 import { appRoutes } from '../../constants';
 import useInputChangeHandler from '../../helpers/formInputHandlers';
-import { sendLoginRequest } from '../../services';
-import { isLoginRequested } from '../../store/selectors';
-import { createSetErrorMessage } from '../../store/global/actionCreators';
-import { setUserData } from '../../helpers/localStorageHelper';
-import {
-	loginRequest,
-	loginRequestSuccess,
-	loginRequestFail,
-} from '../../store/user/actionCreators';
+import { logIn } from '../../store/user/thunk';
 
 const Login = () => {
+	const history = useHistory();
+	const dispatch = useDispatch();
+
 	const [loginData, setLoginData] = useState({
 		email: '',
 		password: '',
 	});
 
-	const dispatch = useDispatch();
-	const history = useHistory();
-	const loginRequested = useSelector(isLoginRequested);
+	const [loginRequested, setLoginRequested] = useState(false);
+
 	const inputChangeHandler = useInputChangeHandler(loginData, setLoginData);
 
+	const loginReq = {
+		loginInput: loginData,
+		onStarted: () => setLoginRequested(true),
+		onSuccess: () => {
+			setLoginRequested(false);
+			NotificationManager.success('LOGIN SUCCESS');
+			history.push(appRoutes.HOME);
+		},
+		onFail: (msg) => {
+			setLoginRequested(false);
+			NotificationManager.error(msg);
+		},
+	};
+
 	const onLoginClick = () => {
-		sendLoginRequest(
-			loginData,
-			() => {
-				dispatch(loginRequest());
-			},
-			(resp) => {
-				const userData = { ...resp.user, token: resp.result };
-				setUserData(userData);
-				dispatch(loginRequestSuccess(userData));
-				history.push(appRoutes.HOME);
-			},
-			(errorMsg) => {
-				dispatch(loginRequestFail());
-				dispatch(createSetErrorMessage(errorMsg));
-			}
-		);
+		dispatch(logIn(loginReq));
 	};
 
 	return (
@@ -60,6 +54,7 @@ const Login = () => {
 						textInputType={TextInputType.Email}
 						placeholder='Enter email'
 						onTextChange={inputChangeHandler}
+						value={loginData.email}
 					/>
 				</div>
 
@@ -71,6 +66,7 @@ const Login = () => {
 						textInputType={TextInputType.Password}
 						placeholder='Enter password'
 						onTextChange={inputChangeHandler}
+						value={loginData.password}
 					/>
 				</div>
 
