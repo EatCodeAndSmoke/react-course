@@ -1,55 +1,47 @@
 import React from 'react';
-import { useSelector, Provider } from 'react-redux';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch } from 'react-router-dom';
 
 import Login from '../Login/Login';
 import Registration from '../Registration/Registration';
 import Courses from '../Courses/Courses';
 import CourseInfo from '../CourseInfo/CourseInfo';
-import Header from '../Header/Header';
-import CreateCourse from '../CreateCourse/CreateCourse';
+import CourseFrom from '../CourseFrom/CourseFrom';
+import PublicRoute from './components/PublicRoute/PublicRoute';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import { appRoutes } from '../../constants';
-import { isAuthenticated } from '../../store/selectors';
-import store from '../../store/index';
 
-const AppRouter = () => {
-	const isAuth = useSelector(isAuthenticated);
+const AppRouter = () => (
+	<BrowserRouter>
+		<Switch>
+			<PrivateRoute exact path={appRoutes.HOME} component={<Courses />} />
 
-	return (
-		<Provider store={store}>
-			<BrowserRouter>
-				<Header />
+			<PublicRoute path={appRoutes.LOGIN} component={<Login />} />
 
-				<Switch>
-					<Route
-						exact
-						path={appRoutes.HOME}
-						render={() => <Redirect to={appRoutes.COURSES} />}
-					/>
+			<PublicRoute path={appRoutes.REGISTRATION} component={<Registration />} />
 
-					<Route path={appRoutes.LOGIN}>
-						{!isAuth ? <Login /> : <Redirect to={appRoutes.HOME} />}
-					</Route>
+			<PrivateRoute exact path={appRoutes.COURSES} component={<Courses />} />
 
-					<Route path={appRoutes.REGISTRATION}>
-						<Registration />
-					</Route>
+			<PrivateRoute
+				exact
+				path={appRoutes.CREATE_COURSE}
+				requiredRole='admin'
+				component={<CourseFrom />}
+			/>
 
-					<Route exact path={appRoutes.COURSES}>
-						{isAuth ? <Courses /> : <Redirect to={appRoutes.LOGIN} />}
-					</Route>
+			<PrivateRoute
+				exact
+				path={appRoutes.UPDATE_COURSE}
+				requiredRole='admin'
+				component={<CourseFrom />}
+			/>
 
-					<Route exact path={appRoutes.CREATE_COURSE}>
-						{isAuth ? <CreateCourse /> : <Redirect to={appRoutes.LOGIN} />}
-					</Route>
-
-					<Route exact path={appRoutes.COURSE_INFO}>
-						{isAuth ? <CourseInfo /> : <Redirect to={appRoutes.LOGIN} />}
-					</Route>
-				</Switch>
-			</BrowserRouter>
-		</Provider>
-	);
-};
+			<PrivateRoute
+				exact
+				path={appRoutes.COURSE_INFO}
+				component={<CourseInfo />}
+			/>
+		</Switch>
+	</BrowserRouter>
+);
 
 export default AppRouter;

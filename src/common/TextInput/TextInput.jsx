@@ -8,10 +8,18 @@ export const TextInputType = {
 	Password: 'password',
 };
 
-const TextInput = ({ name, id, textInputType, placeholder, onTextChange }) => (
+const TextInput = ({
+	name,
+	id,
+	value,
+	textInputType,
+	placeholder,
+	onTextChange,
+}) => (
 	<input
 		id={id}
 		name={name}
+		value={value}
 		className='form-control'
 		type={textInputType}
 		placeholder={placeholder}
@@ -22,10 +30,10 @@ const TextInput = ({ name, id, textInputType, placeholder, onTextChange }) => (
 TextInput.propTypes = {
 	name: PropTypes.string,
 	id: PropTypes.string,
-	textInputType: PropTypes.oneOf(TextInputType),
+	textInputType: PropTypes.string,
 	placeholder: PropTypes.string,
-	// eslint-disable-next-line react/require-default-props
 	onTextChange: PropTypes.func,
+	value: PropTypes.string,
 };
 
 TextInput.defaultProps = {
@@ -33,6 +41,8 @@ TextInput.defaultProps = {
 	id: '',
 	textInputType: TextInputType.Text,
 	placeholder: '',
+	value: '',
+	onTextChange: () => {},
 };
 
 export default TextInput;

@@ -1,118 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { NotificationManager } from 'react-notifications';
 
 import CourseCard from './components/CourseCard/CourseCard';
 import SearchBar from './components/SearchBar/SearchBar';
 import Button, { ButtonColor } from '../../common/Button/Button';
 import { appRoutes } from '../../constants';
-import {
-	getAuthors,
-	getCourses,
-	isInitialCoursesLoaded,
-	isInitialAuthorsLoaded,
-} from '../../store/selectors';
-import { createSetErrorMessage } from '../../store/global/actionCreators';
-import {
-	sendgetAllAuthorsRequest,
-	sendgetAllCoursesRequest,
-} from '../../services';
-import {
-	createLoadAuthors,
-	createLoadAuthorsFail,
-	createLoadAuthorsSuccess,
-	setInitialAuthorsLoaded,
-} from '../../store/authors/actionCreators';
-import {
-	createLoadCourses,
-	createLoadCoursesFail,
-	createLoadCoursesSuccess,
-	setInitialCoursesLoaded,
-} from '../../store/courses/actionCreators';
+import { getCourses, isAdmin } from '../../store/selectors';
+import { loadCourses } from '../../store/courses/thunk';
+import { loadAuthors } from '../../store/authors/thunk';
 
 const Courses = () => {
+	const history = useHistory();
 	const dispatch = useDispatch();
 	const courses = useSelector(getCourses);
-	const authors = useSelector(getAuthors);
-	const initCoursesLoaded = useSelector(isInitialCoursesLoaded);
-	const initAuthorsLoaded = useSelector(isInitialAuthorsLoaded);
+	const isUserAdmin = useSelector(isAdmin);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [filteredCourses, setFilterCourses] = useState(
-		courses.map((c) => <CourseCard key={c.id} course={c} />)
-	);
+	const [filteredCourses, setFilterCourses] = useState(courses);
+	const createCourseClickHandler = () => history.push(appRoutes.CREATE_COURSE);
 
 	useEffect(() => {
-		// load courses
-		if (!initCoursesLoaded) {
-			dispatch(setInitialCoursesLoaded());
+		const loadCoursesReq = {
+			onFail: (msg) => {
+				NotificationManager.error(`FAILED TO LOAD COURSES: ${msg}`);
+			},
+		};
 
-			sendgetAllCoursesRequest(
-				() => {
-					dispatch(createLoadCourses());
-				},
-
-				(loadedCourses) => {
-					dispatch(createLoadCoursesSuccess(loadedCourses.result));
-				},
-
-				(errorMessage) => {
-					dispatch(createLoadCoursesFail());
-					createSetErrorMessage(errorMessage);
-				}
-			);
-		}
-	}, []); // why it yells ?
+		dispatch(loadCourses(loadCoursesReq));
+	}, [dispatch]);
 
 	useEffect(() => {
-		// load authors
+		const loadAuthorsReq = {
+			onFail: (msg) => {
+				NotificationManager.error(`FAILED TO LOAD AUTHORS: ${msg}`);
+			},
+		};
 
-		if (!initAuthorsLoaded) {
-			dispatch(setInitialAuthorsLoaded());
-
-			sendgetAllAuthorsRequest(
-				() => {
-					dispatch(createLoadAuthors());
-				},
-
-				(loadedAuthors) => {
-					dispatch(createLoadAuthorsSuccess(loadedAuthors.result));
-				},
-
-				(errorMessage) => {
-					dispatch(createLoadAuthorsFail());
-					createSetErrorMessage(errorMessage);
-				}
-			);
-		}
-	}, []);
+		dispatch(loadAuthors(loadAuthorsReq));
+	}, [dispatch]);
 
 	useEffect(() => {
 		setFilterCourses(
-			courses
-				.filter(
-					(c) =>
-						!searchTerm ||
-						c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-						c.id.includes(searchTerm)
-				)
-				.map((course) => <CourseCard key={course.id} course={course} />)
+			courses.filter(
+				(c) =>
+					!searchTerm ||
+					c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					c.id.includes(searchTerm)
+			)
 		);
-	}, [searchTerm, courses, authors]);
+	}, [searchTerm, courses]);
+
+	const courseCards = filteredCourses.map((course) => (
+		<CourseCard key={course.id} course={course} />
+	));
 
 	return (
 		<div className='d-flex flex-column'>
 			<div className='d-flex justify-content-between mt-3'>
-				<SearchBar onTextChange={(e) => setSearchTerm(e.target.value)} />
-				<Link to={{ pathname: appRoutes.CREATE_COURSE }}>
+				<SearchBar
+					onTextChange={(e) => setSearchTerm(e.target.value)}
+					value={searchTerm}
+				/>
+				{isUserAdmin && (
 					<Button
 						buttonColor={ButtonColor.Success}
 						outline={false}
 						buttonText='ADD NEW COURSE'
+						onClick={createCourseClickHandler}
 					/>
-				</Link>
+				)}
 			</div>
 
-			{filteredCourses}
+			{courseCards}
 		</div>
 	);
 };

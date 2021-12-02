@@ -37,7 +37,7 @@ const Authors = ({ authorsMode, authors, onAuthorBtnClick }) => {
 				author={a}
 				btnColor={btnColor}
 				btnText={btnText}
-				onAuthorBtnClick={() => onAuthorBtnClick(a.id)}
+				onAuthorBtnClick={onAuthorBtnClick}
 			/>
 		));
 
@@ -50,8 +50,14 @@ const Authors = ({ authorsMode, authors, onAuthorBtnClick }) => {
 };
 
 Authors.propTypes = {
-	authorsMode: PropTypes.oneOf(AuthorsMode).isRequired,
-	authors: PropTypes.arrayOf(PropTypes.any).isRequired,
+	authorsMode: PropTypes.number.isRequired,
+	authors: PropTypes.arrayOf(
+		PropTypes.exact({
+			id: PropTypes.string.isRequired,
+			name: PropTypes.string.isRequired,
+			selected: PropTypes.bool.isRequired,
+		})
+	).isRequired,
 	onAuthorBtnClick: PropTypes.func.isRequired,
 };
 

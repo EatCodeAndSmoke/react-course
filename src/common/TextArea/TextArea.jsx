@@ -1,11 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const TextArea = ({ name, id, cols, rows, placeholder, onTextChange }) => (
+const TextArea = ({
+	name,
+	id,
+	value,
+	cols,
+	rows,
+	placeholder,
+	onTextChange,
+}) => (
 	<textarea
 		className='form-control'
 		name={name}
 		id={id}
+		value={value}
 		cols={cols.toString()}
 		rows={rows.toString()}
 		placeholder={placeholder}
@@ -19,8 +28,8 @@ TextArea.propTypes = {
 	cols: PropTypes.number,
 	rows: PropTypes.number,
 	placeholder: PropTypes.string,
-	// eslint-disable-next-line react/require-default-props
 	onTextChange: PropTypes.func,
+	value: PropTypes.string,
 };
 
 TextArea.defaultProps = {
@@ -29,6 +38,8 @@ TextArea.defaultProps = {
 	cols: 30,
 	rows: 5,
 	placeholder: '',
+	value: '',
+	onTextChange: (e) => e,
 };
 
 export default TextArea;

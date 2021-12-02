@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { NotificationManager } from 'react-notifications';
 
 import onInputChangeHandler from '../../../../helpers/formInputHandlers';
+import { addAuthor } from '../../../../store/authors/thunk';
 import TextInput, {
 	TextInputType,
 } from '../../../../common/TextInput/TextInput';
@@ -10,13 +12,32 @@ import Button, {
 	ButtonColor,
 } from '../../../../common/Button/Button';
 
-const CreateAuthor = ({ onCreateAuthorClick }) => {
+const CreateAuthor = () => {
+	const dispatch = useDispatch();
+
 	const [newAuthor, setNewAuthor] = useState({
 		id: '',
 		name: '',
 	});
 
+	const [addAuthorRequested, setAddAuthorRequested] = useState(false);
+
 	const inputChangeHandler = onInputChangeHandler(newAuthor, setNewAuthor);
+
+	const req = {
+		data: newAuthor,
+		onStarted: () => setAddAuthorRequested(true),
+		onSuccess: () => {
+			setAddAuthorRequested(false);
+			NotificationManager.success('AUTHOR CREATED');
+		},
+		onFail: (msg) => {
+			setAddAuthorRequested(false);
+			NotificationManager.error(msg);
+		},
+	};
+
+	const createAuthorClickHandler = () => dispatch(addAuthor(req));
 
 	return (
 		<div className='d-flex flex-column'>
@@ -27,6 +48,7 @@ const CreateAuthor = ({ onCreateAuthorClick }) => {
 				textInputType={TextInputType.Text}
 				placeholder='ENTER AUTHOR NAME'
 				onTextChange={inputChangeHandler}
+				value={newAuthor.name}
 			/>
 			<div className='text-center mt-3'>
 				<Button
@@ -34,17 +56,12 @@ const CreateAuthor = ({ onCreateAuthorClick }) => {
 					outline
 					ButtonSize={ButtonSize.Small}
 					buttonText='CREATE AUTHOR'
-					onClick={() =>
-						onCreateAuthorClick({ ...newAuthor, id: crypto.randomUUID() })
-					}
+					showLoader={addAuthorRequested}
+					onClick={createAuthorClickHandler}
 				/>
 			</div>
 		</div>
 	);
-};
-
-CreateAuthor.propTypes = {
-	onCreateAuthorClick: PropTypes.func.isRequired,
 };
 
 export default CreateAuthor;

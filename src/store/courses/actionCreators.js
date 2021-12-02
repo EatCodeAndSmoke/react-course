@@ -1,44 +1,21 @@
 import courseActionTypes from './actionTypes';
 
-export const setInitialCoursesLoaded = () => ({
-	type: courseActionTypes.INITIAL_COURSES_LOADED,
-});
-
-export const createCourseRequest = () => ({
-	type: courseActionTypes.CREATE_COURSE_REQUEST,
-});
-
-export const createCourseSuccess = (course) => ({
-	type: courseActionTypes.CREATE_COURSE_SUCCESS,
-	payload: course,
-});
-
-export const createCourseFail = () => ({
-	type: courseActionTypes.CREATE_COURSE_FAIL,
-});
-
-export const createLoadCourses = () => ({
-	type: courseActionTypes.LOAD_COURSES_REQUEST,
-});
-
-export const createLoadCoursesSuccess = (courses) => ({
-	type: courseActionTypes.LOAD_COURSES_SUCCESS,
+export const createCoursesLoaded = (courses) => ({
+	type: courseActionTypes.COURSES_LOADED,
 	payload: courses,
 });
 
-export const createLoadCoursesFail = () => ({
-	type: courseActionTypes.LOAD_COURSES_FAIL,
+export const createCourseAdded = (course) => ({
+	type: courseActionTypes.COURSE_ADDED,
+	payload: course,
 });
 
-export const deleteCourseRequest = () => ({
-	type: courseActionTypes.DELETE_COURSE_REQUEST,
+export const createCourseUpdated = (course) => ({
+	type: courseActionTypes.COURSE_UPDATED,
+	payload: course,
 });
 
-export const deleteCourseSuccess = (courseId) => ({
-	type: courseActionTypes.DELETE_COURSE_SUCCESS,
+export const createCourseDeleted = (courseId) => ({
+	type: courseActionTypes.COURSE_DELETED,
 	payload: courseId,
-});
-
-export const deleteCourseFail = () => ({
-	type: courseActionTypes.DELETE_COURSE_FAIL,
 });

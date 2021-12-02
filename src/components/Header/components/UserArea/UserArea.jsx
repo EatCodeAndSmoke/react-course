@@ -1,56 +1,50 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { NotificationManager } from 'react-notifications';
 
-import { getUserData, isLogoutRequested } from '../../../../store/selectors';
-import { appRoutes } from '../../../../constants';
-import { clearUserData } from '../../../../helpers/localStorageHelper';
+import { getUserData } from '../../../../store/selectors';
+import { logOut } from '../../../../store/user/thunk';
 import Button, {
 	ButtonColor,
 	ButtonSize,
 } from '../../../../common/Button/Button';
-import { logoutRequestSuccess } from '../../../../store/user/actionCreators';
 
 const UserArea = () => {
-	const history = useHistory();
-	const userData = useSelector(getUserData);
-	const logoutRequested = useSelector(isLogoutRequested);
 	const dispatch = useDispatch();
+	const userData = useSelector(getUserData);
+	const [logoutRequested, setLogoutRequested] = useState(false);
+
+	const logoutReq = {
+		data: userData.token,
+		onStarted: () => setLogoutRequested(true),
+		onSuccess: () => {
+			setLogoutRequested(false);
+		},
+		onFail: (msg) => {
+			setLogoutRequested(false);
+			NotificationManager.error(msg);
+		},
+	};
 
 	const onLogoutClick = () => {
-		// sendLogoutRequest(
-		// 	userData.token,
-		// 	() => {
-		// 		dispatch(logoutRequest());
-		// 	},
-		// 	() => {
-		// 		dispatch(logoutRequestSuccess());
-		// 		clearUserData();
-		// 		history.push(appRoutes.LOGIN);
-		// 	},
-		// 	(errorMsg) => {
-		// 		dispatch(logoutRequestFail());
-		// 		dispatch(createSetErrorMessage(errorMsg));
-		// 	}
-		// );
-
-		dispatch(logoutRequestSuccess());
-		clearUserData();
-		// eslint-disable-next-line react/prop-types
-		history.push(appRoutes.LOGIN);
+		dispatch(logOut(logoutReq));
 	};
 
 	return (
-		<div className='d-flex justify-content-center align-items-center'>
-			<h6 style={{ marginRight: '8px', marginTop: 'auto' }}>{userData.name}</h6>
-			<Button
-				buttonColor={ButtonColor.Secondary}
-				onClick={onLogoutClick}
-				buttonSize={ButtonSize.Small}
-				buttonText='LOGOUT'
-				showLoader={logoutRequested}
-			/>
-		</div>
+		userData.isAuth && (
+			<div className='d-flex justify-content-center align-items-center'>
+				<h6 style={{ marginRight: '8px', marginTop: 'auto' }}>
+					{userData.name}
+				</h6>
+				<Button
+					buttonColor={ButtonColor.Secondary}
+					onClick={onLogoutClick}
+					buttonSize={ButtonSize.Small}
+					buttonText='LOGOUT'
+					showLoader={logoutRequested}
+				/>
+			</div>
+		)
 	);
 };
 

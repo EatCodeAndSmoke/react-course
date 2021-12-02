@@ -1,28 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { NotificationManager } from 'react-notifications';
 
 import getDurationText from '../../../../helpers/pipeDuration';
 import { appRoutes } from '../../../../constants';
 import getCourseAuthorNames from '../../../../helpers/courseHelpers';
-import { getAuthors } from '../../../../store/selectors';
-import { createSetSuccessMessage } from '../../../../store/global/actionCreators';
+import { getAuthors, isAdmin } from '../../../../store/selectors';
+import { deleteCourse } from '../../../../store/courses/thunk';
 import Button, {
 	ButtonColor,
 	ButtonSize,
 } from '../../../../common/Button/Button';
-import { deleteCourseSuccess } from '../../../../store/courses/actionCreators';
 
 const CourseCard = ({ course }) => {
 	const dispatch = useDispatch();
+	const history = useHistory();
 	const authors = useSelector(getAuthors);
+	const isUserAdmin = useSelector(isAdmin);
 	const authorNames = getCourseAuthorNames(course, authors);
+	const [deleteCourseRequested, setDeleteCourseRequested] = useState(false);
 
-	const onDeleteClick = () => {
-		dispatch(deleteCourseSuccess(course.id));
-		dispatch(createSetSuccessMessage('COURSE DELETED SUCCESSFULLY'));
+	const deleteReq = {
+		data: course.id,
+		onStarted: () => setDeleteCourseRequested(true),
+		onSuccess: () => {
+			setDeleteCourseRequested(false);
+			NotificationManager.success('COURSE DELETED');
+		},
+		onFail: (msg) => {
+			setDeleteCourseRequested(false);
+			NotificationManager.error(msg);
+		},
 	};
+
+	const onDeleteClick = () => dispatch(deleteCourse(deleteReq));
+
+	const onUpdateClick = () =>
+		history.push(appRoutes.GET_UPDATE_COURSE(course.id));
+
+	const onShowCourseClick = () =>
+		history.push(appRoutes.GET_COURSE_INFO(course.id));
 
 	return (
 		<div className='card mt-3 p-3'>
@@ -54,35 +73,42 @@ const CourseCard = ({ course }) => {
 						<span>{course.creationDate}</span>
 					</p>
 
-					<p className='d-flex justify-content-start align-items-center'>
-						<div style={{ 'margin-right': '4px' }}>
-							<Link to={`${appRoutes.COURSES}/${course.id}`}>
-								<Button
-									buttonColor={ButtonColor.Primary}
-									outline
-									buttonSize={ButtonSize.Small}
-									buttonText='SHOW'
-								/>
-							</Link>
-						</div>
-
-						<div style={{ 'margin-right': '4px' }}>
+					<div className='d-flex justify-content-start align-items-center'>
+						<div style={{ marginRight: '4px' }}>
 							<Button
-								buttonColor={ButtonColor.Secondary}
+								buttonColor={ButtonColor.Primary}
 								outline
 								buttonSize={ButtonSize.Small}
-								buttonText='UPDATE'
+								buttonText='SHOW'
+								onClick={onShowCourseClick}
 							/>
 						</div>
 
-						<Button
-							buttonColor={ButtonColor.Danger}
-							outline
-							buttonSize={ButtonSize.Small}
-							buttonText='DELETE'
-							onClick={onDeleteClick}
-						/>
-					</p>
+						{isUserAdmin && (
+							<div style={{ marginRight: '4px' }}>
+								<Button
+									buttonColor={ButtonColor.Secondary}
+									outline
+									buttonSize={ButtonSize.Small}
+									buttonText='UPDATE'
+									onClick={onUpdateClick}
+								/>
+							</div>
+						)}
+
+						{isUserAdmin && (
+							<div>
+								<Button
+									buttonColor={ButtonColor.Danger}
+									outline
+									buttonSize={ButtonSize.Small}
+									buttonText='DELETE'
+									onClick={onDeleteClick}
+									showLoader={deleteCourseRequested}
+								/>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -90,7 +116,14 @@ const CourseCard = ({ course }) => {
 };
 
 CourseCard.propTypes = {
-	course: PropTypes.instanceOf(PropTypes.any).isRequired,
+	course: PropTypes.exact({
+		id: PropTypes.string,
+		title: PropTypes.string,
+		duration: PropTypes.number,
+		description: PropTypes.string,
+		creationDate: PropTypes.string,
+		authors: PropTypes.arrayOf(PropTypes.string),
+	}).isRequired,
 };
 
 export default CourseCard;
