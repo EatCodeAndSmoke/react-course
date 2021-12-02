@@ -7,8 +7,6 @@ import getDurationText from '../../../helpers/pipeDuration';
 import { getAuthors } from '../../../store/selectors';
 
 const CourseView = ({ course }) => {
-	// eslint-disable-next-line no-debugger
-	debugger;
 	const authors = useSelector(getAuthors);
 	const authorNames = getCourseAuthorNames(course, authors);
 

@@ -49,9 +49,9 @@ const Button = ({
 };
 
 Button.propTypes = {
-	buttonColor: PropTypes.oneOf({ ...ButtonColor }),
+	buttonColor: PropTypes.string,
 	outline: PropTypes.bool,
-	buttonSize: PropTypes.oneOf({ ...ButtonSize }),
+	buttonSize: PropTypes.string,
 	buttonText: PropTypes.string.isRequired,
 	onClick: PropTypes.func,
 	showLoader: PropTypes.bool,

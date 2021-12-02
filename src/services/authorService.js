@@ -2,22 +2,22 @@ import BaseService from './baseService';
 import { apiPaths } from '../constants';
 
 class AuthorService extends BaseService {
-	getAll = async () => {
-		const resp = await this.GET({
+	getAll = async ({ onStarted, onSuccess, onFail }) =>
+		this.GET({
+			onStarted,
+			onSuccess,
+			onFail,
 			url: apiPaths.ALL_AUTHORS,
 		});
 
-		return resp;
-	};
-
-	add = async (author) => {
-		const resp = await this.POST({
+	add = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.POST({
+			onStarted,
+			onSuccess,
+			onFail,
+			data,
 			url: apiPaths.ADD_AUTHOR,
-			data: author,
 		});
-
-		return resp;
-	};
 }
 
 export default AuthorService;

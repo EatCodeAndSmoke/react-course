@@ -23,7 +23,7 @@ const Login = () => {
 	const inputChangeHandler = useInputChangeHandler(loginData, setLoginData);
 
 	const loginReq = {
-		loginInput: loginData,
+		data: loginData,
 		onStarted: () => setLoginRequested(true),
 		onSuccess: () => {
 			setLoginRequested(false);

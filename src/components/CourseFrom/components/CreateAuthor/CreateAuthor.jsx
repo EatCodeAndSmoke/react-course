@@ -25,7 +25,7 @@ const CreateAuthor = () => {
 	const inputChangeHandler = onInputChangeHandler(newAuthor, setNewAuthor);
 
 	const req = {
-		author: newAuthor,
+		data: newAuthor,
 		onStarted: () => setAddAuthorRequested(true),
 		onSuccess: () => {
 			setAddAuthorRequested(false);
@@ -48,6 +48,7 @@ const CreateAuthor = () => {
 				textInputType={TextInputType.Text}
 				placeholder='ENTER AUTHOR NAME'
 				onTextChange={inputChangeHandler}
+				value={newAuthor.name}
 			/>
 			<div className='text-center mt-3'>
 				<Button

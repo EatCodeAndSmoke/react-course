@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Button, {
-	ButtonColor,
-	ButtonSize,
-} from '../../../../../../common/Button/Button';
+import Button, { ButtonSize } from '../../../../../../common/Button/Button';
 
 const AuthorRecord = ({ author, btnColor, btnText, onAuthorBtnClick }) => (
 	<div className='d-flex justify-content-center align-items-center mt-2'>
@@ -14,17 +11,18 @@ const AuthorRecord = ({ author, btnColor, btnText, onAuthorBtnClick }) => (
 			outline
 			ButtonSize={ButtonSize.Small}
 			buttonText={btnText}
-			onClick={() => onAuthorBtnClick(author)}
+			onClick={() => onAuthorBtnClick(author.id, !author.selected)}
 		/>
 	</div>
 );
 
 AuthorRecord.propTypes = {
-	author: PropTypes.instanceOf({
+	author: PropTypes.exact({
 		id: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
+		selected: PropTypes.bool.isRequired,
 	}).isRequired,
-	btnColor: PropTypes.oneOf({ ...ButtonColor }).isRequired,
+	btnColor: PropTypes.string.isRequired,
 	btnText: PropTypes.string.isRequired,
 	onAuthorBtnClick: PropTypes.func.isRequired,
 };

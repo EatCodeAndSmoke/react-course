@@ -7,7 +7,7 @@ import { NotificationManager } from 'react-notifications';
 import getDurationText from '../../../../helpers/pipeDuration';
 import { appRoutes } from '../../../../constants';
 import getCourseAuthorNames from '../../../../helpers/courseHelpers';
-import { getAuthors } from '../../../../store/selectors';
+import { getAuthors, isAdmin } from '../../../../store/selectors';
 import { deleteCourse } from '../../../../store/courses/thunk';
 import Button, {
 	ButtonColor,
@@ -18,11 +18,12 @@ const CourseCard = ({ course }) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const authors = useSelector(getAuthors);
+	const isUserAdmin = useSelector(isAdmin);
 	const authorNames = getCourseAuthorNames(course, authors);
 	const [deleteCourseRequested, setDeleteCourseRequested] = useState(false);
 
 	const deleteReq = {
-		courseId: course.id,
+		data: course.id,
 		onStarted: () => setDeleteCourseRequested(true),
 		onSuccess: () => {
 			setDeleteCourseRequested(false);
@@ -72,8 +73,8 @@ const CourseCard = ({ course }) => {
 						<span>{course.creationDate}</span>
 					</p>
 
-					<p className='d-flex justify-content-start align-items-center'>
-						<div style={{ 'margin-right': '4px' }}>
+					<div className='d-flex justify-content-start align-items-center'>
+						<div style={{ marginRight: '4px' }}>
 							<Button
 								buttonColor={ButtonColor.Primary}
 								outline
@@ -83,25 +84,31 @@ const CourseCard = ({ course }) => {
 							/>
 						</div>
 
-						<div style={{ 'margin-right': '4px' }}>
-							<Button
-								buttonColor={ButtonColor.Secondary}
-								outline
-								buttonSize={ButtonSize.Small}
-								buttonText='UPDATE'
-								onClick={onUpdateClick}
-							/>
-						</div>
+						{isUserAdmin && (
+							<div style={{ marginRight: '4px' }}>
+								<Button
+									buttonColor={ButtonColor.Secondary}
+									outline
+									buttonSize={ButtonSize.Small}
+									buttonText='UPDATE'
+									onClick={onUpdateClick}
+								/>
+							</div>
+						)}
 
-						<Button
-							buttonColor={ButtonColor.Danger}
-							outline
-							buttonSize={ButtonSize.Small}
-							buttonText='DELETE'
-							onClick={onDeleteClick}
-							showLoader={deleteCourseRequested}
-						/>
-					</p>
+						{isUserAdmin && (
+							<div>
+								<Button
+									buttonColor={ButtonColor.Danger}
+									outline
+									buttonSize={ButtonSize.Small}
+									buttonText='DELETE'
+									onClick={onDeleteClick}
+									showLoader={deleteCourseRequested}
+								/>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -115,6 +122,7 @@ CourseCard.propTypes = {
 		duration: PropTypes.number,
 		description: PropTypes.string,
 		creationDate: PropTypes.string,
+		authors: PropTypes.arrayOf(PropTypes.string),
 	}).isRequired,
 };
 

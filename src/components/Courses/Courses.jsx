@@ -7,37 +7,38 @@ import CourseCard from './components/CourseCard/CourseCard';
 import SearchBar from './components/SearchBar/SearchBar';
 import Button, { ButtonColor } from '../../common/Button/Button';
 import { appRoutes } from '../../constants';
-import { getCourses } from '../../store/selectors';
+import { getCourses, isAdmin } from '../../store/selectors';
 import { loadCourses } from '../../store/courses/thunk';
 import { loadAuthors } from '../../store/authors/thunk';
 
 const Courses = () => {
 	const history = useHistory();
 	const dispatch = useDispatch();
+	const courses = useSelector(getCourses);
+	const isUserAdmin = useSelector(isAdmin);
+	const [searchTerm, setSearchTerm] = useState('');
+	const [filteredCourses, setFilterCourses] = useState(courses);
+	const createCourseClickHandler = () => history.push(appRoutes.CREATE_COURSE);
 
 	useEffect(() => {
 		const loadCoursesReq = {
-			onSuccess: () => {
-				const loadAuthorsReq = {
-					onFail: (msg) => {
-						NotificationManager.error(msg);
-					},
-				};
-
-				dispatch(loadAuthors(loadAuthorsReq));
-			},
 			onFail: (msg) => {
-				NotificationManager.error(msg);
+				NotificationManager.error(`FAILED TO LOAD COURSES: ${msg}`);
 			},
 		};
 
 		dispatch(loadCourses(loadCoursesReq));
-	}, [dispatch]); // why is it loading twice ?
+	}, [dispatch]);
 
-	const courses = useSelector(getCourses);
+	useEffect(() => {
+		const loadAuthorsReq = {
+			onFail: (msg) => {
+				NotificationManager.error(`FAILED TO LOAD AUTHORS: ${msg}`);
+			},
+		};
 
-	const [searchTerm, setSearchTerm] = useState('');
-	const [filteredCourses, setFilterCourses] = useState(courses);
+		dispatch(loadAuthors(loadAuthorsReq));
+	}, [dispatch]);
 
 	useEffect(() => {
 		setFilterCourses(
@@ -54,18 +55,21 @@ const Courses = () => {
 		<CourseCard key={course.id} course={course} />
 	));
 
-	const createCourseClickHandler = () => history.push(appRoutes.CREATE_COURSE);
-
 	return (
 		<div className='d-flex flex-column'>
 			<div className='d-flex justify-content-between mt-3'>
-				<SearchBar onTextChange={(e) => setSearchTerm(e.target.value)} />
-				<Button
-					buttonColor={ButtonColor.Success}
-					outline={false}
-					buttonText='ADD NEW COURSE'
-					onClick={createCourseClickHandler}
+				<SearchBar
+					onTextChange={(e) => setSearchTerm(e.target.value)}
+					value={searchTerm}
 				/>
+				{isUserAdmin && (
+					<Button
+						buttonColor={ButtonColor.Success}
+						outline={false}
+						buttonText='ADD NEW COURSE'
+						onClick={createCourseClickHandler}
+					/>
+				)}
 			</div>
 
 			{courseCards}

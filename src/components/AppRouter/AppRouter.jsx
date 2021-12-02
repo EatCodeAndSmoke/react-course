@@ -1,70 +1,47 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch, Provider } from 'react-redux';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Switch } from 'react-router-dom';
 
 import Login from '../Login/Login';
 import Registration from '../Registration/Registration';
 import Courses from '../Courses/Courses';
 import CourseInfo from '../CourseInfo/CourseInfo';
-import Header from '../Header/Header';
 import CourseFrom from '../CourseFrom/CourseFrom';
+import PublicRoute from './components/PublicRoute/PublicRoute';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import { appRoutes } from '../../constants';
-import { isAuthenticated } from '../../store/selectors';
-import store from '../../store/index';
-import { readJwtToken } from '../../helpers/localStorageHelper';
-import { retreiveUserIdentity } from '../../store/user/thunk';
 
-const AppRouter = () => {
-	const dispatch = useDispatch();
+const AppRouter = () => (
+	<BrowserRouter>
+		<Switch>
+			<PrivateRoute exact path={appRoutes.HOME} component={<Courses />} />
 
-	useEffect(() => {
-		const token = readJwtToken();
-		if (token) {
-			dispatch(retreiveUserIdentity({}));
-		}
-	}, [dispatch]);
+			<PublicRoute path={appRoutes.LOGIN} component={<Login />} />
 
-	const isAuth = useSelector(isAuthenticated);
+			<PublicRoute path={appRoutes.REGISTRATION} component={<Registration />} />
 
-	return (
-		<Provider store={store}>
-			<BrowserRouter>
-				<Header />
+			<PrivateRoute exact path={appRoutes.COURSES} component={<Courses />} />
 
-				<Switch>
-					<Route
-						exact
-						path={appRoutes.HOME}
-						render={() => <Redirect to={appRoutes.COURSES} />}
-					/>
+			<PrivateRoute
+				exact
+				path={appRoutes.CREATE_COURSE}
+				requiredRole='admin'
+				component={<CourseFrom />}
+			/>
 
-					<Route path={appRoutes.LOGIN}>
-						{!isAuth ? <Login /> : <Redirect to={appRoutes.HOME} />}
-					</Route>
+			<PrivateRoute
+				exact
+				path={appRoutes.UPDATE_COURSE}
+				requiredRole='admin'
+				component={<CourseFrom />}
+			/>
 
-					<Route path={appRoutes.REGISTRATION}>
-						<Registration />
-					</Route>
-
-					<Route exact path={appRoutes.COURSES}>
-						{isAuth ? <Courses /> : <Redirect to={appRoutes.LOGIN} />}
-					</Route>
-
-					<Route exact path={appRoutes.CREATE_COURSE}>
-						{isAuth ? <CourseFrom /> : <Redirect to={appRoutes.LOGIN} />}
-					</Route>
-
-					<Route exact path={appRoutes.UPDATE_COURSE}>
-						{isAuth ? <CourseFrom /> : <Redirect to={appRoutes.LOGIN} />}
-					</Route>
-
-					<Route exact path={appRoutes.COURSE_INFO}>
-						{isAuth ? <CourseInfo /> : <Redirect to={appRoutes.LOGIN} />}
-					</Route>
-				</Switch>
-			</BrowserRouter>
-		</Provider>
-	);
-};
+			<PrivateRoute
+				exact
+				path={appRoutes.COURSE_INFO}
+				component={<CourseInfo />}
+			/>
+		</Switch>
+	</BrowserRouter>
+);
 
 export default AppRouter;

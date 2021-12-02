@@ -7,30 +7,28 @@ import Button, { ButtonColor } from '../../common/Button/Button';
 import { appRoutes } from '../../constants';
 import CourseService from '../../services/courseService';
 import CourseView from './components/CourseView';
-import { createUserLoggedOut } from '../../store/user/actionCreators';
 
 const CourseInfo = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const [course, setCourse] = useState(null);
+	const [course, setCourse] = useState({
+		id: '',
+		title: '',
+		description: '',
+		duration: 0,
+		authors: [],
+	});
 
 	useEffect(() => {
-		const fetchCourse = async () => {
-			const courseService = new CourseService();
-			const { status, data } = await courseService.getById(id);
-			if (status === 200) {
-				setCourse(data.result);
-			} else if (status === 401) {
-				dispatch(createUserLoggedOut());
-			} else if (status === 404) {
-				NotificationManager.error(data.result);
-			} else {
-				NotificationManager.error('SOMETHING WENT WRONG');
-			}
-		};
-
-		fetchCourse();
+		const courseService = new CourseService();
+		courseService.getById({
+			data: id,
+			onSuccess: (resp) => {
+				setCourse(resp.result);
+			},
+			onFail: (msg) => NotificationManager.error(msg),
+		});
 	}, [id, dispatch]);
 
 	const onBackToCoursesClick = () => history.push(appRoutes.COURSES);

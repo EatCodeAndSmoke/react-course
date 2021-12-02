@@ -30,7 +30,7 @@ const TextInput = ({
 TextInput.propTypes = {
 	name: PropTypes.string,
 	id: PropTypes.string,
-	textInputType: PropTypes.oneOf(TextInputType),
+	textInputType: PropTypes.string,
 	placeholder: PropTypes.string,
 	onTextChange: PropTypes.func,
 	value: PropTypes.string,

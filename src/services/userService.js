@@ -2,40 +2,40 @@ import BaseService from './baseService';
 import { apiPaths } from '../constants';
 
 class UserService extends BaseService {
-	login = async (loginInput) => {
-		const resp = await this.POST({
-			data: loginInput,
+	login = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.POST({
+			onStarted,
+			onSuccess,
+			onFail,
+			data,
 			url: apiPaths.LOGIN,
 		});
 
-		return resp;
-	};
-
-	register = async (registerInput) => {
-		const resp = await this.POST({
-			data: registerInput,
+	register = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.POST({
+			onStarted,
+			onSuccess,
+			onFail,
+			data,
 			url: apiPaths.REGISTER,
 		});
 
-		return resp;
-	};
-
-	logout = async (jwtToken) => {
-		const resp = this.DELETE({
+	logout = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.DELETE({
+			onStarted,
+			onSuccess,
+			onFail,
 			url: apiPaths.LOGOUT,
-			headers: { Authorization: jwtToken },
+			headers: { Authorization: data },
 		});
 
-		return resp;
-	};
-
-	me = async () => {
-		const resp = await this.GET({
+	me = async ({ onStarted, onSuccess, onFail }) =>
+		this.GET({
+			onStarted,
+			onSuccess,
+			onFail,
 			url: apiPaths.ME,
 		});
-
-		return resp;
-	};
 }
 
 export default UserService;

@@ -27,7 +27,7 @@ const Registration = () => {
 	);
 
 	const registerReq = {
-		registerInput: registrationData,
+		data: registrationData,
 		onStarted: () => setRegistrationRequested(true),
 		onSuccess: () => {
 			setRegistrationRequested(false);
@@ -58,6 +58,7 @@ const Registration = () => {
 						textInputType={TextInputType.Text}
 						placeholder='Enter name'
 						onTextChange={inputChangeHandler}
+						value={registrationData.name}
 					/>
 				</div>
 
@@ -69,6 +70,7 @@ const Registration = () => {
 						textInputType={TextInputType.Email}
 						placeholder='Enter email'
 						onTextChange={inputChangeHandler}
+						value={registrationData.email}
 					/>
 				</div>
 
@@ -80,6 +82,7 @@ const Registration = () => {
 						textInputType={TextInputType.Password}
 						placeholder='Enter password'
 						onTextChange={inputChangeHandler}
+						value={registrationData.password}
 					/>
 				</div>
 

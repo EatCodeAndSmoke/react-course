@@ -2,47 +2,47 @@ import BaseService from './baseService';
 import { apiPaths } from '../constants';
 
 class CourseService extends BaseService {
-	getAll = async () => {
-		const resp = await this.GET({
+	getAll = async ({ onStarted, onSuccess, onFail }) =>
+		this.GET({
+			onStarted,
+			onSuccess,
+			onFail,
 			url: apiPaths.ALL_COURSES,
 		});
 
-		return resp;
-	};
-
-	getById = async (courseId) => {
-		const resp = await this.GET({
-			url: apiPaths.COURSE_BY_ID(courseId),
+	getById = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.GET({
+			onStarted,
+			onSuccess,
+			onFail,
+			url: apiPaths.COURSE_BY_ID(data),
 		});
 
-		return resp;
-	};
-
-	add = async (course) => {
-		const resp = await this.POST({
+	add = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.POST({
+			onStarted,
+			onSuccess,
+			onFail,
+			data,
 			url: apiPaths.ADD_COURSE,
-			data: course,
 		});
 
-		return resp;
-	};
-
-	update = async (course) => {
-		const resp = await this.PUT({
-			url: apiPaths.UPDATE_COURSE(course.id),
-			data: course,
+	update = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.PUT({
+			onStarted,
+			onSuccess,
+			onFail,
+			data,
+			url: apiPaths.UPDATE_COURSE(data.id),
 		});
 
-		return resp;
-	};
-
-	delete = async (courseId) => {
-		const resp = await this.DELETE({
-			url: apiPaths.DELETE_COURSE(courseId),
+	delete = async ({ data, onStarted, onSuccess, onFail }) =>
+		this.DELETE({
+			onStarted,
+			onSuccess,
+			onFail,
+			url: apiPaths.DELETE_COURSE(data),
 		});
-
-		return resp;
-	};
 }
 
 export default CourseService;

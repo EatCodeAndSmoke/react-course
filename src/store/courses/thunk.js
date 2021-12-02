@@ -1,5 +1,4 @@
 import CourseService from '../../services/courseService';
-import { processAxiosResponse } from '../sharedThunk';
 import {
 	createCourseAdded,
 	createCourseUpdated,
@@ -10,73 +9,53 @@ import {
 const courseService = new CourseService();
 
 export const addCourse =
-	({ course, onStarted, onSuccess, onFail }) =>
-	async (dispatch) => {
-		const addResp = await courseService.add(course);
-
-		const data = {
-			resp: addResp,
+	({ data, onStarted, onSuccess, onFail }) =>
+	async (dispatch) =>
+		courseService.add({
+			data,
 			onStarted,
-			onSuccess: () => {
-				dispatch(createCourseAdded(course));
+			onSuccess: (resp) => {
+				dispatch(createCourseAdded(resp.result));
 				if (onSuccess) onSuccess();
 			},
 			onFail,
-		};
-
-		await processAxiosResponse(data);
-	};
+		});
 
 export const updateCourse =
-	({ course, onStarted, onSuccess, onFail }) =>
-	async (dispatch) => {
-		const updateResp = await courseService.update(course);
-
-		const data = {
-			resp: updateResp,
+	({ data, onStarted, onSuccess, onFail }) =>
+	async (dispatch) =>
+		courseService.update({
+			data,
 			onStarted,
 			onSuccess: () => {
-				dispatch(createCourseUpdated(course));
+				dispatch(createCourseUpdated(data));
 				if (onSuccess) onSuccess();
 			},
 			onFail,
-		};
-
-		await processAxiosResponse(data);
-	};
+		});
 
 export const deleteCourse =
-	({ courseId, onStarted, onSuccess, onFail }) =>
-	async (dispatch) => {
-		const deleteResp = await courseService.delete(courseId);
-
-		const data = {
-			resp: deleteResp,
+	({ data, onStarted, onSuccess, onFail }) =>
+	async (dispatch) =>
+		courseService.delete({
+			data,
 			onStarted,
 			onSuccess: () => {
-				dispatch(createCourseDeleted(courseId));
+				dispatch(createCourseDeleted(data));
 				if (onSuccess) onSuccess();
 			},
 			onFail,
-		};
-
-		await processAxiosResponse(data);
-	};
+		});
 
 export const loadCourses =
 	({ onStarted, onSuccess, onFail }) =>
 	async (dispatch) => {
-		const getAllResp = await courseService.getAll();
-
-		const data = {
-			resp: getAllResp,
+		courseService.getAll({
 			onStarted,
 			onSuccess: (resp) => {
 				dispatch(createCoursesLoaded(resp.result));
 				if (onSuccess) onSuccess();
 			},
 			onFail,
-		};
-
-		await processAxiosResponse(data);
+		});
 	};

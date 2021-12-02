@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { NotificationManager } from 'react-notifications';
 
 import { getUserData } from '../../../../store/selectors';
-import { appRoutes } from '../../../../constants';
 import { logOut } from '../../../../store/user/thunk';
 import Button, {
 	ButtonColor,
@@ -12,18 +10,15 @@ import Button, {
 } from '../../../../common/Button/Button';
 
 const UserArea = () => {
-	const history = useHistory();
 	const dispatch = useDispatch();
 	const userData = useSelector(getUserData);
-
 	const [logoutRequested, setLogoutRequested] = useState(false);
 
 	const logoutReq = {
-		jwtToken: userData.token,
+		data: userData.token,
 		onStarted: () => setLogoutRequested(true),
 		onSuccess: () => {
 			setLogoutRequested(false);
-			history.push(appRoutes.LOGIN);
 		},
 		onFail: (msg) => {
 			setLogoutRequested(false);
@@ -36,16 +31,20 @@ const UserArea = () => {
 	};
 
 	return (
-		<div className='d-flex justify-content-center align-items-center'>
-			<h6 style={{ marginRight: '8px', marginTop: 'auto' }}>{userData.name}</h6>
-			<Button
-				buttonColor={ButtonColor.Secondary}
-				onClick={onLogoutClick}
-				buttonSize={ButtonSize.Small}
-				buttonText='LOGOUT'
-				showLoader={logoutRequested}
-			/>
-		</div>
+		userData.isAuth && (
+			<div className='d-flex justify-content-center align-items-center'>
+				<h6 style={{ marginRight: '8px', marginTop: 'auto' }}>
+					{userData.name}
+				</h6>
+				<Button
+					buttonColor={ButtonColor.Secondary}
+					onClick={onLogoutClick}
+					buttonSize={ButtonSize.Small}
+					buttonText='LOGOUT'
+					showLoader={logoutRequested}
+				/>
+			</div>
+		)
 	);
 };
 

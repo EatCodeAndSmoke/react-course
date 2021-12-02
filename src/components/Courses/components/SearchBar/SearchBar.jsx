@@ -9,12 +9,13 @@ import Button, {
 	ButtonSize,
 } from '../../../../common/Button/Button';
 
-const SearchBar = ({ onTextChange }) => (
+const SearchBar = ({ onTextChange, value }) => (
 	<div className='d-flex'>
 		<TextInput
 			textInputType={TextInputType.Search}
 			placeholder='TYPE TO SEARCH'
 			onTextChange={onTextChange}
+			value={value}
 		/>
 
 		<Button
@@ -28,10 +29,11 @@ const SearchBar = ({ onTextChange }) => (
 
 SearchBar.propTypes = {
 	onTextChange: PropTypes.func,
+	value: PropTypes.string.isRequired,
 };
 
 SearchBar.defaultProps = {
-	onTextChange: (e) => e.preventDefault(),
+	onTextChange: (e) => e,
 };
 
 export default SearchBar;
