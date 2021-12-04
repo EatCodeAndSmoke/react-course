@@ -15,6 +15,7 @@ export const ButtonSize = {
 };
 
 const Button = ({
+	testId,
 	buttonColor,
 	isSubmit,
 	outline,
@@ -37,6 +38,7 @@ const Button = ({
 
 	return (
 		<button
+			data-testid={testId}
 			type={isSubmit ? 'submit' : 'button'}
 			className={classesStr}
 			onClick={onClick}
@@ -49,6 +51,7 @@ const Button = ({
 };
 
 Button.propTypes = {
+	testId: PropTypes.string,
 	buttonColor: PropTypes.string,
 	outline: PropTypes.bool,
 	buttonSize: PropTypes.string,
@@ -59,6 +62,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
+	testId: '',
 	buttonColor: ButtonColor.Primary,
 	outline: false,
 	buttonSize: ButtonSize.Medium,

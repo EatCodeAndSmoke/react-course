@@ -5,6 +5,7 @@ import UserArea from './components/UserArea/UserArea';
 
 const Header = () => (
 	<div
+		data-testid='header'
 		className='navbar navbar-light bg-light'
 		style={{ padding: '2px 14px 2px 14px' }}
 	>

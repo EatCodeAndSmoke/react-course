@@ -44,11 +44,15 @@ const CourseCard = ({ course }) => {
 		history.push(appRoutes.GET_COURSE_INFO(course.id));
 
 	return (
-		<div className='card mt-3 p-3'>
+		<div data-testid='course-card' className='card mt-3 p-3'>
 			<div className='row'>
 				<div className='card-body col-7'>
-					<h5 className='card-title'>{course.title}</h5>
-					<p className='card-text'>{course.description}</p>
+					<h5 data-testid='course-card-title' className='card-title'>
+						{course.title}
+					</h5>
+					<p data-testid='course-card-descrip' className='card-text'>
+						{course.description}
+					</p>
 				</div>
 
 				<div className='col-5'>
@@ -56,14 +60,16 @@ const CourseCard = ({ course }) => {
 						<span>
 							<strong>Authors: </strong>
 						</span>
-						<span>{authorNames}</span>
+						<span data-testid='course-card-authors'>{authorNames}</span>
 					</p>
 
 					<p>
 						<span>
 							<strong>Duration: </strong>
 						</span>
-						<span>{getDurationText(course.duration)}</span>
+						<span data-testid='course-card-duration'>
+							{getDurationText(course.duration)}
+						</span>
 					</p>
 
 					<p>

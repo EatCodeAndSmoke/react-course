@@ -56,7 +56,7 @@ const Courses = () => {
 	));
 
 	return (
-		<div className='d-flex flex-column'>
+		<div data-testid='courses' className='d-flex flex-column'>
 			<div className='d-flex justify-content-between mt-3'>
 				<SearchBar
 					onTextChange={(e) => setSearchTerm(e.target.value)}
@@ -64,6 +64,7 @@ const Courses = () => {
 				/>
 				{isUserAdmin && (
 					<Button
+						testId='courses-addnewcoursebtn'
 						buttonColor={ButtonColor.Success}
 						outline={false}
 						buttonText='ADD NEW COURSE'

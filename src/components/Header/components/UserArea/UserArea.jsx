@@ -32,8 +32,14 @@ const UserArea = () => {
 
 	return (
 		userData.isAuth && (
-			<div className='d-flex justify-content-center align-items-center'>
-				<h6 style={{ marginRight: '8px', marginTop: 'auto' }}>
+			<div
+				data-testid='user-area'
+				className='d-flex justify-content-center align-items-center'
+			>
+				<h6
+					data-testid='user-area-username'
+					style={{ marginRight: '8px', marginTop: 'auto' }}
+				>
 					{userData.name}
 				</h6>
 				<Button
