@@ -47,10 +47,10 @@ const CourseCard = ({ course }) => {
 		<div data-testid='course-card' className='card mt-3 p-3'>
 			<div className='row'>
 				<div className='card-body col-7'>
-					<h5 data-testid='course-title' className='card-title'>
+					<h5 data-testid='course-card-title' className='card-title'>
 						{course.title}
 					</h5>
-					<p data-testid='course-descrip' className='card-text'>
+					<p data-testid='course-card-descrip' className='card-text'>
 						{course.description}
 					</p>
 				</div>
@@ -60,14 +60,14 @@ const CourseCard = ({ course }) => {
 						<span>
 							<strong>Authors: </strong>
 						</span>
-						<span data-testid='course-authors'>{authorNames}</span>
+						<span data-testid='course-card-authors'>{authorNames}</span>
 					</p>
 
 					<p>
 						<span>
 							<strong>Duration: </strong>
 						</span>
-						<span data-testid='course-duration'>
+						<span data-testid='course-card-duration'>
 							{getDurationText(course.duration)}
 						</span>
 					</p>

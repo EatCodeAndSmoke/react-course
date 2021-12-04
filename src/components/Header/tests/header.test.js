@@ -15,12 +15,13 @@ it('Should have logo and users name', () => {
 		</Provider>
 	);
 
+	const header = getByTestId('header');
 	const logo = getByTestId('logo');
 	const userArea = getByTestId('user-area');
 	const userName = getByTestId('user-area-username');
 
-	expect(getByTestId('header')).toContainElement(logo);
-	expect(getByTestId('header')).toContainElement(userArea);
-	expect(getByTestId('user-area')).toContainElement(userName);
+	expect(header).toContainElement(logo);
+	expect(header).toContainElement(userArea);
+	expect(userArea).toContainElement(userName);
 	expect(userName).toHaveTextContent(mockedState.userState.user.name);
 });

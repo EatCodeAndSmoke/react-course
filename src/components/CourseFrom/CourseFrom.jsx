@@ -8,7 +8,7 @@ import TextInput, { TextInputType } from '../../common/TextInput/TextInput';
 import TextArea from '../../common/TextArea/TextArea';
 import CreateAuthor from './components/CreateAuthor/CreateAuthor';
 import AuthorsList from './components/AuthorsList/AuthorsList';
-import getCurrentDate from '../../helpers/dateGenerator';
+import { getCurrentDate } from '../../helpers/dateGenerator';
 import getDurationText from '../../helpers/pipeDuration';
 import onInputChangeHandler from '../../helpers/formInputHandlers';
 import { appRoutes } from '../../constants';
@@ -81,7 +81,7 @@ const CourseFrom = () => {
 	};
 
 	return (
-		<form onSubmit={addOrUpdateCourseHandler}>
+		<form data-testid='coursefrom' onSubmit={addOrUpdateCourseHandler}>
 			<div className='form-group row mt-3'>
 				<div className='col-6'>
 					<TextInput
